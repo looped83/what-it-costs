@@ -106,6 +106,7 @@
     }
 
     .result-block {
+      position: relative;
       background: #161616;
       border: 1px solid #2a2a2a;
       border-radius: 12px;
@@ -163,6 +164,17 @@
 
     .reset-all:hover        { color: #aaa; }
     .reset-all:focus-visible { outline: 2px solid #888; outline-offset: 2px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   </style>
 </head>
 <body>
@@ -190,17 +202,20 @@
     </div>
 
     <div class="results" aria-live="polite" aria-label="Berechnungsergebnisse">
-      <div class="result-block" role="button" tabindex="0" aria-label="Entgangene Dividende (Jahr) – zum Kopieren tippen">
+      <div class="result-block" role="button" tabindex="0">
         <div class="label">Entgangene Dividende (Jahr)</div>
         <div class="value zero" id="r-annual">— €</div>
+        <span class="sr-only">Zum Kopieren tippen</span>
       </div>
-      <div class="result-block" role="button" tabindex="0" aria-label="Entgangener Ertrag (20 Jahre) – zum Kopieren tippen">
+      <div class="result-block" role="button" tabindex="0">
         <div class="label">Entgangener Ertrag (20 Jahre)</div>
         <div class="value zero" id="r-annual20">— €</div>
+        <span class="sr-only">Zum Kopieren tippen</span>
       </div>
-      <div class="result-block highlight" role="button" tabindex="0" aria-label="Benötigtes Investitionskapital – zum Kopieren tippen">
+      <div class="result-block highlight" role="button" tabindex="0">
         <div class="label">Benötigtes Investitionskapital</div>
         <div class="value zero" id="r-wealth">— €</div>
+        <span class="sr-only">Zum Kopieren tippen</span>
       </div>
     </div>
     <button class="reset-all" type="button">↺ Zurücksetzen</button>
@@ -338,7 +353,7 @@
       ctx.textBaseline = 'middle';
       ctx.fillText('💸', 32, 36);
       canvas.toBlob(blob => {
-        document.getElementById('favicon').href = URL.createObjectURL(blob);
+        if (blob) document.getElementById('favicon').href = URL.createObjectURL(blob);
       });
     }
   </script>
