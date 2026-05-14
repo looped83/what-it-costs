@@ -86,22 +86,6 @@
       box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
     }
 
-    .reset-all {
-      display: block;
-      margin: 0.75rem auto 0;
-      background: none;
-      border: none;
-      color: #444;
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      padding: 0.4rem 0.75rem;
-      transition: color 0.15s;
-    }
-
-    .reset-all:hover { color: #888; }
-
     .input-wrap .unit {
       position: absolute;
       right: 0.75rem;
@@ -118,7 +102,6 @@
     }
 
     .result-block {
-      position: relative;
       background: #161616;
       border: 1px solid #2a2a2a;
       border-radius: 12px;
@@ -129,8 +112,8 @@
       user-select: none;
     }
 
-    .result-block:hover         { border-color: #3a3a3a; }
-    .result-block.highlight     { background: #1a1600; border-color: #e8c96a44; }
+    .result-block:hover           { border-color: #3a3a3a; }
+    .result-block.highlight       { background: #1a1600; border-color: #e8c96a44; }
     .result-block.highlight:hover { border-color: #e8c96a77; }
 
     .result-block .label {
@@ -157,6 +140,22 @@
 
     .result-block.highlight .value { color: #e8c96a; }
     .result-block .value.zero      { color: #444; }
+
+    .reset-all {
+      display: block;
+      margin: 0.75rem auto 0;
+      background: none;
+      border: none;
+      color: #444;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0.4rem 0.75rem;
+      transition: color 0.15s;
+    }
+
+    .reset-all:hover { color: #888; }
   </style>
 </head>
 <body>
@@ -177,13 +176,13 @@
         <label for="yield">Dividendenrendite</label>
         <div class="input-wrap">
           <input id="yield" type="text" inputmode="decimal"
-                 placeholder="z.B. 4,5" spellcheck="false" value="4" />
+                 placeholder="z.B. 4,5" autocomplete="off" spellcheck="false" value="4" />
           <span class="unit" aria-hidden="true">%</span>
         </div>
       </div>
     </div>
 
-    <div class="results" role="status" aria-live="polite" aria-label="Berechnungsergebnisse">
+    <div class="results" aria-live="polite" aria-label="Berechnungsergebnisse">
       <div class="result-block" role="button" tabindex="0">
         <div class="label">Entgangene Dividende (1 Jahr)</div>
         <div class="value zero" id="r-annual">— €</div>
@@ -204,6 +203,7 @@
     const priceInput = document.getElementById('price');
     const yieldInput = document.getElementById('yield');
     const resultsDiv = document.querySelector('.results');
+    const resetBtn   = document.querySelector('.reset-all');
     const els = {
       annual:   document.getElementById('r-annual'),
       annual20: document.getElementById('r-annual20'),
@@ -250,7 +250,6 @@
       setResult(els.wealth,   price / rate);
     }
 
-    // Price: live thousand-separator formatting
     priceInput.addEventListener('input', () => {
       const num = parsePrice(priceInput.value);
       if (isFinite(num) && num > 0) {
@@ -263,7 +262,6 @@
       calculate();
     });
 
-    // Yield: allow digits plus a single comma or dot as decimal separator
     yieldInput.addEventListener('input', () => {
       let val = yieldInput.value.replace(/[^\d,.]/g, '');
       const sep = val.search(/[,.]/);
@@ -274,15 +272,13 @@
       calculate();
     });
 
-    // Reset all
-    document.querySelector('.reset-all').addEventListener('click', () => {
+    resetBtn.addEventListener('click', () => {
       priceInput.value = '';
       yieldInput.value = '';
       priceInput.focus();
       calculate();
     });
 
-    // Copy result on click / keyboard
     document.querySelectorAll('.result-block').forEach(block => {
       function copy() {
         const valueEl = block.querySelector('.value');
@@ -292,7 +288,7 @@
           const label = block.querySelector('.label');
           const orig  = label.textContent;
 
-          // Silence aria-live during transient feedback
+          // Silence aria-live so screen readers don't announce the transient feedback
           resultsDiv.setAttribute('aria-live', 'off');
           block.classList.add('copied');
           label.textContent = 'Kopiert ✓';
@@ -302,7 +298,7 @@
             label.textContent = orig;
             resultsDiv.setAttribute('aria-live', 'polite');
           }, 1500);
-        });
+        }).catch(() => {});
       }
 
       block.addEventListener('click', copy);
