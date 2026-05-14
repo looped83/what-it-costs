@@ -70,7 +70,7 @@
       font-size: 1.05rem;
       color: #fff;
       outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      transition: border-color 0.2s, box-shadow 0.2s;
       box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
     }
 
@@ -79,6 +79,11 @@
     .input-wrap input:focus {
       border-color: #888;
       box-shadow: 0 0 0 3px rgba(255,255,255,0.07);
+    }
+
+    .input-wrap input.invalid {
+      border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
     }
 
     .input-wrap .unit {
@@ -141,26 +146,27 @@
       <div class="field">
         <label for="price">Kaufsumme</label>
         <div class="input-wrap">
-          <input id="price" type="text" inputmode="numeric" placeholder="10.000" autocomplete="off" />
-          <span class="unit">€</span>
+          <input id="price" type="text" inputmode="numeric"
+                 placeholder="10.000" autocomplete="off" spellcheck="false" />
+          <span class="unit" aria-hidden="true">€</span>
         </div>
       </div>
       <div class="field">
         <label for="yield">Dividendenrendite</label>
         <div class="input-wrap">
           <input id="yield" type="number" min="0" max="100" step="0.1" value="4" />
-          <span class="unit">%</span>
+          <span class="unit" aria-hidden="true">%</span>
         </div>
       </div>
     </div>
 
-    <div class="results">
+    <div class="results" role="status" aria-live="polite" aria-label="Berechnungsergebnisse">
       <div class="result-block">
         <div class="label">Entgangene Dividende (1 Jahr)</div>
         <div class="value zero" id="r-annual">— €</div>
       </div>
       <div class="result-block">
-        <div class="label">Entgangene Dividende (20 Jahre)</div>
+        <div class="label">Entgangene Dividende (20 Jahre, Zinseszins)</div>
         <div class="value zero" id="r-annual20">— €</div>
       </div>
       <div class="result-block highlight">
@@ -195,15 +201,25 @@
       const price    = parsePrice(priceInput.value);
       const divYield = parseFloat(yieldInput.value);
 
-      if (!isFinite(price) || !isFinite(divYield) || price <= 0 || divYield <= 0) {
+      const priceOk = isFinite(price) && price > 0;
+      const yieldOk = isFinite(divYield) && divYield > 0;
+
+      // Only flag invalid when the field has been touched and is wrong
+      priceInput.classList.toggle('invalid', priceInput.value !== '' && !priceOk);
+      yieldInput.classList.toggle('invalid', !yieldOk);
+
+      if (!priceOk || !yieldOk) {
         Object.values(els).forEach(el => setResult(el, null));
         return;
       }
 
       const rate   = divYield / 100;
       const annual = price * rate;
+      // Compound growth: total gain after 20 years of reinvested dividends
+      const compound20 = price * (Math.pow(1 + rate, 20) - 1);
+
       setResult(els.annual,   annual);
-      setResult(els.annual20, annual * 20);
+      setResult(els.annual20, compound20);
       setResult(els.wealth,   price / rate);
     }
 
@@ -213,8 +229,8 @@
         const cursor  = priceInput.selectionStart;
         const prevLen = priceInput.value.length;
         priceInput.value = fmtInt.format(num);
-        priceInput.setSelectionRange(cursor + (priceInput.value.length - prevLen),
-                                     cursor + (priceInput.value.length - prevLen));
+        const pos = cursor + (priceInput.value.length - prevLen);
+        priceInput.setSelectionRange(pos, pos);
       }
       calculate();
     });
