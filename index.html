@@ -172,6 +172,7 @@
       padding: 0;
       overflow: hidden;
       clip: rect(0, 0, 0, 0);
+      clip-path: inset(50%);
       white-space: nowrap;
       border: 0;
     }
@@ -280,13 +281,14 @@
     }
 
     priceInput.addEventListener('input', () => {
+      const cursor  = priceInput.selectionStart;
+      const prevLen = priceInput.value.length;
+
       const raw    = priceInput.value.replace(/[^\d,]/g, '');
       const sep    = raw.indexOf(',');
       const intStr = sep === -1 ? raw  : raw.slice(0, sep);
       const decStr = sep === -1 ? ''   : ',' + raw.slice(sep + 1).replace(/,/g, '');
 
-      const cursor  = priceInput.selectionStart;
-      const prevLen = priceInput.value.length;
       priceInput.value = (intStr !== '' ? fmtInt.format(parseInt(intStr, 10)) : '') + decStr;
       const pos = Math.max(0, cursor + (priceInput.value.length - prevLen));
       priceInput.setSelectionRange(pos, pos);
