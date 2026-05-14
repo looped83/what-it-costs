@@ -304,10 +304,8 @@
         if (valueEl.classList.contains('zero') || block.classList.contains('copied')) return;
         if (!navigator.clipboard) return;
 
+        const orig = labelEl.textContent;
         navigator.clipboard.writeText(valueEl.textContent).then(() => {
-          const orig = labelEl.textContent;
-
-          // Silence aria-live so screen readers don't announce the transient feedback
           resultsDiv.setAttribute('aria-live', 'off');
           block.classList.add('copied');
           labelEl.textContent = 'Kopiert ✓';
@@ -315,7 +313,9 @@
           setTimeout(() => {
             block.classList.remove('copied');
             labelEl.textContent = orig;
-            resultsDiv.setAttribute('aria-live', 'polite');
+            if (!resultsDiv.querySelector('.copied')) {
+              resultsDiv.setAttribute('aria-live', 'polite');
+            }
           }, 1500);
         }).catch(() => {});
       }
