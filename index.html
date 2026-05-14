@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>What it costs</title>
-  <link rel="icon" id="favicon" href="#" />
+  <link rel="icon" id="favicon" href="data:," />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -147,7 +147,7 @@
       background: none;
       border: none;
       color: #444;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
@@ -259,7 +259,7 @@
 
       const cursor  = priceInput.selectionStart;
       const prevLen = priceInput.value.length;
-      priceInput.value = (intStr && isFinite(intNum) ? fmtInt.format(intNum) : intStr) + decStr;
+      priceInput.value = (intStr !== '' ? fmtInt.format(intNum) : '') + decStr;
       const pos = Math.max(0, cursor + (priceInput.value.length - prevLen));
       priceInput.setSelectionRange(pos, pos);
 
