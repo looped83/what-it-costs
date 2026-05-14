@@ -88,6 +88,10 @@
       box-shadow: 0 0 0 3px rgba(231,76,60,0.2);
     }
 
+    .input-wrap input.invalid:focus {
+      box-shadow: 0 0 0 3px rgba(231,76,60,0.5);
+    }
+
     .input-wrap .unit {
       position: absolute;
       right: 0.75rem;
@@ -183,7 +187,7 @@
 
     <div class="inputs">
       <div class="field">
-        <label for="price">Kaufsumme</label>
+        <label for="price">Kaufsumme<span class="sr-only"> (€)</span></label>
         <div class="input-wrap">
           <input id="price" type="text" inputmode="decimal"
                  placeholder="10.000" autocomplete="off" spellcheck="false" />
@@ -191,7 +195,7 @@
         </div>
       </div>
       <div class="field">
-        <label for="yield">Dividendenrendite</label>
+        <label for="yield">Dividendenrendite<span class="sr-only"> (%)</span></label>
         <div class="input-wrap">
           <input id="yield" type="text" inputmode="decimal"
                  placeholder="z.B. 4,5" autocomplete="off" spellcheck="false" />
@@ -217,7 +221,7 @@
         <span class="sr-only">Zum Kopieren tippen</span>
       </div>
     </div>
-    <button class="reset-all" type="button">↺ Zurücksetzen</button>
+    <button class="reset-all" type="button"><span aria-hidden="true">↺</span> Zurücksetzen</button>
   </div>
 
   <script>
@@ -328,7 +332,7 @@
           setTimeout(() => {
             block.classList.remove('copied');
             labelEl.textContent = orig;
-            if (!resultsDiv.querySelector('.copied')) {
+            if (!resultsDiv.querySelector('.result-block.copied')) {
               resultsDiv.setAttribute('aria-live', 'polite');
             }
           }, 1500);
