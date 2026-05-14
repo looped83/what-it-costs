@@ -66,7 +66,7 @@
       background: #1e1e1e;
       border: 1.5px solid #444;
       border-radius: 8px;
-      padding: 0.85rem 2rem 0.85rem 0.875rem;
+      padding: 0.85rem 3rem 0.85rem 0.875rem;
       font-size: 1.05rem;
       color: #fff;
       outline: none;
@@ -86,6 +86,30 @@
       box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
     }
 
+    .reset-btn {
+      position: absolute;
+      right: 1.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.25rem 0.3rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: color 0.15s, opacity 0.15s;
+    }
+
+    .reset-btn:hover { color: #bbb; }
+
+    .input-wrap input:not(:placeholder-shown) ~ .reset-btn {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .input-wrap .unit {
       position: absolute;
       right: 0.75rem;
@@ -102,17 +126,20 @@
     }
 
     .result-block {
+      position: relative;
       background: #161616;
       border: 1px solid #2a2a2a;
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
       text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      user-select: none;
     }
 
-    .result-block.highlight {
-      background: #1a1600;
-      border-color: #e8c96a44;
-    }
+    .result-block:hover         { border-color: #3a3a3a; }
+    .result-block.highlight     { background: #1a1600; border-color: #e8c96a44; }
+    .result-block.highlight:hover { border-color: #e8c96a77; }
 
     .result-block .label {
       font-size: 0.7rem;
@@ -121,7 +148,10 @@
       text-transform: uppercase;
       color: #fff;
       margin-bottom: 0.4rem;
+      transition: color 0.2s;
     }
+
+    .result-block.copied .label { color: #6fcf97; }
 
     .result-block .value {
       font-size: clamp(1.6rem, 8vw, 3rem);
@@ -134,7 +164,7 @@
     }
 
     .result-block.highlight .value { color: #e8c96a; }
-    .result-block .value.zero { color: #444; }
+    .result-block .value.zero      { color: #444; }
   </style>
 </head>
 <body>
@@ -148,28 +178,31 @@
         <div class="input-wrap">
           <input id="price" type="text" inputmode="numeric"
                  placeholder="10.000" autocomplete="off" spellcheck="false" />
+          <button class="reset-btn" type="button" aria-label="Kaufsumme zurücksetzen">×</button>
           <span class="unit" aria-hidden="true">€</span>
         </div>
       </div>
       <div class="field">
         <label for="yield">Dividendenrendite</label>
         <div class="input-wrap">
-          <input id="yield" type="number" min="0" max="100" step="0.1" value="4" spellcheck="false" />
+          <input id="yield" type="text" inputmode="decimal"
+                 placeholder="z.B. 4,5" spellcheck="false" value="4" />
+          <button class="reset-btn" type="button" aria-label="Dividendenrendite zurücksetzen">×</button>
           <span class="unit" aria-hidden="true">%</span>
         </div>
       </div>
     </div>
 
     <div class="results" role="status" aria-live="polite" aria-label="Berechnungsergebnisse">
-      <div class="result-block">
+      <div class="result-block" role="button" tabindex="0">
         <div class="label">Entgangene Dividende (1 Jahr)</div>
         <div class="value zero" id="r-annual">— €</div>
       </div>
-      <div class="result-block">
+      <div class="result-block" role="button" tabindex="0">
         <div class="label">Entgangene Dividende (20 Jahre)</div>
         <div class="value zero" id="r-annual20">— €</div>
       </div>
-      <div class="result-block highlight">
+      <div class="result-block highlight" role="button" tabindex="0">
         <div class="label">Entgehendes Vermögen</div>
         <div class="value zero" id="r-wealth">— €</div>
       </div>
@@ -179,19 +212,23 @@
   <script>
     const priceInput = document.getElementById('price');
     const yieldInput = document.getElementById('yield');
+    const resultsDiv = document.querySelector('.results');
     const els = {
       annual:   document.getElementById('r-annual'),
       annual20: document.getElementById('r-annual20'),
       wealth:   document.getElementById('r-wealth'),
     };
+    const resultEls = Object.values(els);
 
     const fmt    = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const fmtInt = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
 
-    const resultEls = Object.values(els);
-
     function parsePrice(str) {
       return parseFloat(str.replace(/\./g, '').replace(',', '.'));
+    }
+
+    function parseYield(str) {
+      return parseFloat(str.replace(',', '.'));
     }
 
     function setResult(el, value) {
@@ -201,13 +238,13 @@
 
     function calculate() {
       const price    = parsePrice(priceInput.value);
-      const divYield = parseFloat(yieldInput.value);
+      const divYield = parseYield(yieldInput.value);
 
-      const priceOk = isFinite(price) && price > 0;
-      const yieldOk = isFinite(divYield) && divYield > 0;
+      const priceOk = isFinite(price)    && price    > 0;
+      const yieldOk = isFinite(divYield) && divYield > 0 && divYield <= 100;
 
       priceInput.classList.toggle('invalid', priceInput.value !== '' && !priceOk);
-      yieldInput.classList.toggle('invalid', !yieldOk);
+      yieldInput.classList.toggle('invalid', yieldInput.value !== '' && !yieldOk);
 
       if (!priceOk || !yieldOk) {
         resultEls.forEach(el => setResult(el, null));
@@ -222,6 +259,7 @@
       setResult(els.wealth,   price / rate);
     }
 
+    // Price: live thousand-separator formatting
     priceInput.addEventListener('input', () => {
       const num = parsePrice(priceInput.value);
       if (isFinite(num) && num > 0) {
@@ -234,7 +272,56 @@
       calculate();
     });
 
-    yieldInput.addEventListener('input', calculate);
+    // Yield: allow digits plus a single comma or dot as decimal separator
+    yieldInput.addEventListener('input', () => {
+      let val = yieldInput.value.replace(/[^\d,.]/g, '');
+      const sep = val.search(/[,.]/);
+      if (sep !== -1) {
+        val = val.slice(0, sep + 1) + val.slice(sep + 1).replace(/[,.]/g, '');
+      }
+      if (yieldInput.value !== val) yieldInput.value = val;
+      calculate();
+    });
+
+    // Reset buttons
+    document.querySelectorAll('.reset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = btn.closest('.input-wrap').querySelector('input');
+        input.value = '';
+        input.focus();
+        calculate();
+      });
+    });
+
+    // Copy result on click / keyboard
+    document.querySelectorAll('.result-block').forEach(block => {
+      function copy() {
+        const valueEl = block.querySelector('.value');
+        if (valueEl.classList.contains('zero') || block.classList.contains('copied')) return;
+
+        navigator.clipboard.writeText(valueEl.textContent).then(() => {
+          const label = block.querySelector('.label');
+          const orig  = label.textContent;
+
+          // Silence aria-live during transient feedback
+          resultsDiv.setAttribute('aria-live', 'off');
+          block.classList.add('copied');
+          label.textContent = 'Kopiert ✓';
+
+          setTimeout(() => {
+            block.classList.remove('copied');
+            label.textContent = orig;
+            resultsDiv.setAttribute('aria-live', 'polite');
+          }, 1500);
+        });
+      }
+
+      block.addEventListener('click', copy);
+      block.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copy(); }
+      });
+    });
+
     calculate();
   </script>
 </body>
