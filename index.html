@@ -68,18 +68,24 @@
 
     .input-wrap input {
       width: 100%;
-      background: #161616;
-      border: 1px solid #2a2a2a;
+      background: #1e1e1e;
+      border: 1.5px solid #444;
       border-radius: 8px;
-      padding: 0.75rem 2rem 0.75rem 0.875rem;
-      font-size: 1rem;
-      color: #f0f0f0;
+      padding: 0.85rem 2rem 0.85rem 0.875rem;
+      font-size: 1.05rem;
+      color: #fff;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
+    }
+
+    .input-wrap input::placeholder {
+      color: #555;
     }
 
     .input-wrap input:focus {
-      border-color: #555;
+      border-color: #888;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.07);
     }
 
     .input-wrap .unit {
@@ -167,7 +173,7 @@
         <div class="value zero" id="annual">— €</div>
       </div>
       <div class="result-block">
-        <div class="label">Entgangene Dividende in 10 Jahren</div>
+        <div class="label">Entgangene Dividende in 20 Jahren</div>
         <div class="value zero" id="annual10">— €</div>
       </div>
       <div class="result-block highlight">
@@ -234,7 +240,7 @@
       const wealth  = price / rate;
 
       setResult(annualEl,   fmt.format(annual)       + ' €', true);
-      setResult(annual10El, fmt.format(annual * 10)  + ' €', true);
+      setResult(annual10El, fmt.format(annual * 20)  + ' €', true);
       setResult(wealthEl,   fmt.format(wealth)        + ' €', true);
     }
 
