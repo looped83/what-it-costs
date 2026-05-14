@@ -322,7 +322,9 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('💸', 32, 36);
-      document.getElementById('favicon').href = canvas.toDataURL();
+      canvas.toBlob(blob => {
+        document.getElementById('favicon').href = URL.createObjectURL(blob);
+      });
     }
   </script>
 </body>
