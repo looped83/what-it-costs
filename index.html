@@ -66,7 +66,7 @@
       background: #1e1e1e;
       border: 1.5px solid #444;
       border-radius: 8px;
-      padding: 0.85rem 3rem 0.85rem 0.875rem;
+      padding: 0.85rem 2rem 0.85rem 0.875rem;
       font-size: 1.05rem;
       color: #fff;
       outline: none;
@@ -86,29 +86,21 @@
       box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
     }
 
-    .reset-btn {
-      position: absolute;
-      right: 1.8rem;
-      top: 50%;
-      transform: translateY(-50%);
+    .reset-all {
+      display: block;
+      margin: 0.75rem auto 0;
       background: none;
       border: none;
-      color: #555;
-      font-size: 1rem;
-      line-height: 1;
+      color: #444;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       cursor: pointer;
-      padding: 0.25rem 0.3rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: color 0.15s, opacity 0.15s;
+      padding: 0.4rem 0.75rem;
+      transition: color 0.15s;
     }
 
-    .reset-btn:hover { color: #bbb; }
-
-    .input-wrap input:not(:placeholder-shown) ~ .reset-btn {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .reset-all:hover { color: #888; }
 
     .input-wrap .unit {
       position: absolute;
@@ -178,7 +170,6 @@
         <div class="input-wrap">
           <input id="price" type="text" inputmode="numeric"
                  placeholder="10.000" autocomplete="off" spellcheck="false" />
-          <button class="reset-btn" type="button" aria-label="Kaufsumme zurücksetzen">×</button>
           <span class="unit" aria-hidden="true">€</span>
         </div>
       </div>
@@ -187,7 +178,6 @@
         <div class="input-wrap">
           <input id="yield" type="text" inputmode="decimal"
                  placeholder="z.B. 4,5" spellcheck="false" value="4" />
-          <button class="reset-btn" type="button" aria-label="Dividendenrendite zurücksetzen">×</button>
           <span class="unit" aria-hidden="true">%</span>
         </div>
       </div>
@@ -207,6 +197,7 @@
         <div class="value zero" id="r-wealth">— €</div>
       </div>
     </div>
+    <button class="reset-all" type="button">↺ Zurücksetzen</button>
   </div>
 
   <script>
@@ -283,14 +274,12 @@
       calculate();
     });
 
-    // Reset buttons
-    document.querySelectorAll('.reset-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const input = btn.closest('.input-wrap').querySelector('input');
-        input.value = '';
-        input.focus();
-        calculate();
-      });
+    // Reset all
+    document.querySelector('.reset-all').addEventListener('click', () => {
+      priceInput.value = '';
+      yieldInput.value = '';
+      priceInput.focus();
+      calculate();
     });
 
     // Copy result on click / keyboard
