@@ -24,6 +24,13 @@
       max-width: 560px;
     }
 
+    .hero-emoji {
+      font-size: 2.8rem;
+      text-align: center;
+      margin-bottom: 0.6rem;
+      line-height: 1;
+    }
+
     h1 {
       font-size: 2rem;
       font-weight: 700;
@@ -109,11 +116,12 @@
     }
 
     .result-block .value {
-      font-size: 3.2rem;
+      font-size: clamp(1.6rem, 8vw, 3.2rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1;
       color: #fff;
+      white-space: nowrap;
       transition: color 0.2s;
     }
 
@@ -128,6 +136,7 @@
 </head>
 <body>
   <div class="card">
+    <div class="hero-emoji">💸</div>
     <h1>What it costs</h1>
 
     <div class="inputs">
