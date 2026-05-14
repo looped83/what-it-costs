@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dividenden-Opportunitätskostenrechner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 2.5rem;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 0.75rem 2rem 0.75rem 0.875rem;
+      font-size: 1rem;
+      color: #f0f0f0;
+      outline: none;
+      transition: border-color 0.15s;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    .input-wrap input::-webkit-outer-spin-button,
+    .input-wrap input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+
+    .input-wrap input:focus {
+      border-color: #444;
+    }
+
+    .input-wrap .unit {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: #444;
+      pointer-events: none;
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .result-block {
+      border-top: 1px solid #1e1e1e;
+      padding-top: 1.5rem;
+    }
+
+    .result-block .label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 0.4rem;
+    }
+
+    .result-block .value {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: #fff;
+      transition: color 0.2s;
+    }
+
+    .result-block.highlight .value {
+      color: #e8c96a;
+    }
+
+    .result-block .value.zero {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Dividenden-Opportunitätskosten</h1>
+
+    <div class="inputs">
+      <div class="field">
+        <label>Kaufsumme</label>
+        <div class="input-wrap">
+          <input id="price" type="number" min="0" step="100" placeholder="10000" />
+          <span class="unit">€</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Dividendenrendite</label>
+        <div class="input-wrap">
+          <input id="yield" type="number" min="0" max="100" step="0.1" value="4" />
+          <span class="unit">%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="result-block">
+        <div class="label">Entgangene jährliche Dividende</div>
+        <div class="value zero" id="annual">— €</div>
+      </div>
+      <div class="result-block highlight">
+        <div class="label">Entgehendes Vermögen</div>
+        <div class="value zero" id="wealth">— €</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const priceInput = document.getElementById('price');
+    const yieldInput = document.getElementById('yield');
+    const annualEl  = document.getElementById('annual');
+    const wealthEl  = document.getElementById('wealth');
+
+    const fmt = new Intl.NumberFormat('de-DE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    function calculate() {
+      const price    = parseFloat(priceInput.value);
+      const divYield = parseFloat(yieldInput.value);
+
+      if (!isFinite(price) || !isFinite(divYield) || price <= 0 || divYield <= 0) {
+        annualEl.textContent = '— €';
+        wealthEl.textContent = '— €';
+        annualEl.classList.add('zero');
+        wealthEl.classList.add('zero');
+        return;
+      }
+
+      const rate   = divYield / 100;
+      const annual = price * rate;
+      const wealth = price / rate;
+
+      annualEl.textContent = fmt.format(annual) + ' €';
+      wealthEl.textContent = fmt.format(wealth) + ' €';
+      annualEl.classList.remove('zero');
+      wealthEl.classList.remove('zero');
+    }
+
+    priceInput.addEventListener('input', calculate);
+    yieldInput.addEventListener('input', calculate);
+
+    calculate();
+  </script>
+</body>
+</html>
