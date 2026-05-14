@@ -8,26 +8,31 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      height: 100%;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #0a0a0a;
       color: #f0f0f0;
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1.5rem;
+      min-height: 100%;
     }
 
     .card {
       width: 100%;
       max-width: 560px;
+      padding: 0.5rem 0;
     }
 
     .hero-emoji {
-      font-size: 2.8rem;
+      font-size: 2.4rem;
       text-align: center;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.4rem;
       line-height: 1;
     }
 
@@ -36,7 +41,7 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       color: #fff;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
       text-align: center;
     }
 
@@ -44,7 +49,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      margin-bottom: 3rem;
+      margin-bottom: 1.5rem;
     }
 
     .field label {
@@ -90,14 +95,14 @@
     .results {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
     }
 
     .result-block {
       background: #161616;
       border: 1px solid #2a2a2a;
       border-radius: 12px;
-      padding: 1.75rem 1.5rem;
+      padding: 1.25rem 1.5rem;
       text-align: center;
     }
 
@@ -112,11 +117,11 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #fff;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.4rem;
     }
 
     .result-block .value {
-      font-size: clamp(1.6rem, 8vw, 3.2rem);
+      font-size: clamp(1.6rem, 8vw, 3rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1;
@@ -161,6 +166,10 @@
         <div class="label">Entgangene jährliche Dividende</div>
         <div class="value zero" id="annual">— €</div>
       </div>
+      <div class="result-block">
+        <div class="label">Entgangene Dividende in 10 Jahren</div>
+        <div class="value zero" id="annual10">— €</div>
+      </div>
       <div class="result-block highlight">
         <div class="label">Entgehendes Vermögen</div>
         <div class="value zero" id="wealth">— €</div>
@@ -169,10 +178,11 @@
   </div>
 
   <script>
-    const priceInput = document.getElementById('price');
-    const yieldInput = document.getElementById('yield');
-    const annualEl  = document.getElementById('annual');
-    const wealthEl  = document.getElementById('wealth');
+    const priceInput  = document.getElementById('price');
+    const yieldInput  = document.getElementById('yield');
+    const annualEl    = document.getElementById('annual');
+    const annual10El  = document.getElementById('annual10');
+    const wealthEl    = document.getElementById('wealth');
 
     const fmt = new Intl.NumberFormat('de-DE', {
       minimumFractionDigits: 2,
@@ -185,7 +195,6 @@
     });
 
     function getRawPrice() {
-      // Strip thousand separators (.) and replace decimal comma with dot
       return parseFloat(priceInput.value.replace(/\./g, '').replace(',', '.'));
     }
 
@@ -193,10 +202,9 @@
       const raw = priceInput.value.replace(/\./g, '').replace(',', '.');
       const num = parseFloat(raw);
       if (isFinite(num) && num > 0) {
-        const cursor = priceInput.selectionStart;
+        const cursor  = priceInput.selectionStart;
         const prevLen = priceInput.value.length;
         priceInput.value = fmtInt.format(num);
-        // Adjust cursor for added/removed separator dots
         const diff = priceInput.value.length - prevLen;
         priceInput.setSelectionRange(cursor + diff, cursor + diff);
       }
@@ -205,26 +213,29 @@
 
     yieldInput.addEventListener('input', calculate);
 
+    function setResult(el, text, active) {
+      el.textContent = text;
+      el.classList.toggle('zero', !active);
+    }
+
     function calculate() {
       const price    = getRawPrice();
       const divYield = parseFloat(yieldInput.value);
 
       if (!isFinite(price) || !isFinite(divYield) || price <= 0 || divYield <= 0) {
-        annualEl.textContent = '— €';
-        wealthEl.textContent = '— €';
-        annualEl.classList.add('zero');
-        wealthEl.classList.add('zero');
+        setResult(annualEl,   '— €', false);
+        setResult(annual10El, '— €', false);
+        setResult(wealthEl,   '— €', false);
         return;
       }
 
-      const rate   = divYield / 100;
-      const annual = price * rate;
-      const wealth = price / rate;
+      const rate    = divYield / 100;
+      const annual  = price * rate;
+      const wealth  = price / rate;
 
-      annualEl.textContent = fmt.format(annual) + ' €';
-      wealthEl.textContent = fmt.format(wealth) + ' €';
-      annualEl.classList.remove('zero');
-      wealthEl.classList.remove('zero');
+      setResult(annualEl,   fmt.format(annual)       + ' €', true);
+      setResult(annual10El, fmt.format(annual * 10)  + ' €', true);
+      setResult(wealthEl,   fmt.format(wealth)        + ' €', true);
     }
 
     calculate();
