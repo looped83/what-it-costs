@@ -167,7 +167,7 @@
       <div class="field">
         <label for="price">Kaufsumme</label>
         <div class="input-wrap">
-          <input id="price" type="text" inputmode="numeric"
+          <input id="price" type="text" inputmode="decimal"
                  placeholder="10.000" autocomplete="off" spellcheck="false" />
           <span class="unit" aria-hidden="true">€</span>
         </div>
@@ -251,14 +251,21 @@
     }
 
     priceInput.addEventListener('input', () => {
-      const num = parsePrice(priceInput.value);
-      if (isFinite(num) && num > 0) {
-        const cursor  = priceInput.selectionStart;
-        const prevLen = priceInput.value.length;
-        priceInput.value = fmtInt.format(num);
-        const pos = cursor + (priceInput.value.length - prevLen);
-        priceInput.setSelectionRange(pos, pos);
-      }
+      // Strip non-numeric chars; keep only the first comma as decimal separator
+      let raw = priceInput.value.replace(/[^\d,]/g, '');
+      const sep = raw.indexOf(',');
+      if (sep !== -1) raw = raw.slice(0, sep + 1) + raw.slice(sep + 1).replace(/,/g, '');
+
+      const intStr = sep === -1 ? raw       : raw.slice(0, sep);
+      const decStr = sep === -1 ? ''        : raw.slice(sep);
+      const intNum = parseInt(intStr, 10);
+
+      const cursor  = priceInput.selectionStart;
+      const prevLen = priceInput.value.length;
+      priceInput.value = (intStr && isFinite(intNum) ? fmtInt.format(intNum) : intStr) + decStr;
+      const pos = Math.max(0, cursor + (priceInput.value.length - prevLen));
+      priceInput.setSelectionRange(pos, pos);
+
       calculate();
     });
 
