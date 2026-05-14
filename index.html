@@ -183,7 +183,7 @@
         <label for="yield">Dividendenrendite</label>
         <div class="input-wrap">
           <input id="yield" type="text" inputmode="decimal"
-                 placeholder="z.B. 4,5" autocomplete="off" spellcheck="false" value="4" />
+                 placeholder="z.B. 4,5" autocomplete="off" spellcheck="false" />
           <span class="unit" aria-hidden="true">%</span>
         </div>
       </div>
@@ -207,6 +207,8 @@
   </div>
 
   <script>
+    const YIELD_DEFAULT = '4';
+
     const priceInput = document.getElementById('price');
     const yieldInput = document.getElementById('yield');
     const resultsDiv = document.querySelector('.results');
@@ -284,8 +286,6 @@
       calculate();
     });
 
-    const YIELD_DEFAULT = '4';
-
     resetBtn.addEventListener('click', () => {
       priceInput.value = '';
       yieldInput.value = YIELD_DEFAULT;
@@ -322,6 +322,7 @@
       });
     });
 
+    yieldInput.value = YIELD_DEFAULT;
     calculate();
 
     {
