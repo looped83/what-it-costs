@@ -251,13 +251,10 @@
     }
 
     priceInput.addEventListener('input', () => {
-      // Strip non-numeric chars; keep only the first comma as decimal separator
-      let raw = priceInput.value.replace(/[^\d,]/g, '');
-      const sep = raw.indexOf(',');
-      if (sep !== -1) raw = raw.slice(0, sep + 1) + raw.slice(sep + 1).replace(/,/g, '');
-
-      const intStr = sep === -1 ? raw       : raw.slice(0, sep);
-      const decStr = sep === -1 ? ''        : raw.slice(sep);
+      const raw    = priceInput.value.replace(/[^\d,]/g, '');
+      const sep    = raw.indexOf(',');
+      const intStr = sep === -1 ? raw  : raw.slice(0, sep);
+      const decStr = sep === -1 ? ''   : ',' + raw.slice(sep + 1).replace(/,/g, '');
       const intNum = parseInt(intStr, 10);
 
       const cursor  = priceInput.selectionStart;
@@ -287,22 +284,23 @@
     });
 
     document.querySelectorAll('.result-block').forEach(block => {
+      const valueEl = block.querySelector('.value');
+      const labelEl = block.querySelector('.label');
+
       function copy() {
-        const valueEl = block.querySelector('.value');
         if (valueEl.classList.contains('zero') || block.classList.contains('copied')) return;
 
         navigator.clipboard.writeText(valueEl.textContent).then(() => {
-          const label = block.querySelector('.label');
-          const orig  = label.textContent;
+          const orig = labelEl.textContent;
 
           // Silence aria-live so screen readers don't announce the transient feedback
           resultsDiv.setAttribute('aria-live', 'off');
           block.classList.add('copied');
-          label.textContent = 'Kopiert ✓';
+          labelEl.textContent = 'Kopiert ✓';
 
           setTimeout(() => {
             block.classList.remove('copied');
-            label.textContent = orig;
+            labelEl.textContent = orig;
             resultsDiv.setAttribute('aria-live', 'polite');
           }, 1500);
         }).catch(() => {});
@@ -316,7 +314,7 @@
 
     calculate();
 
-    (() => {
+    {
       const canvas = document.createElement('canvas');
       canvas.width = canvas.height = 64;
       const ctx = canvas.getContext('2d');
@@ -325,7 +323,7 @@
       ctx.textBaseline = 'middle';
       ctx.fillText('💸', 32, 36);
       document.getElementById('favicon').href = canvas.toDataURL();
-    })();
+    }
   </script>
 </body>
 </html>
