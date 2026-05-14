@@ -147,6 +147,7 @@
       background: none;
       border: none;
       color: #444;
+      font-family: inherit;
       font-size: 0.75rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -160,7 +161,7 @@
 </head>
 <body>
   <div class="card">
-    <div class="hero-emoji">💸</div>
+    <div class="hero-emoji" aria-hidden="true">💸</div>
     <h1>What it costs</h1>
 
     <div class="inputs">
@@ -255,11 +256,10 @@
       const sep    = raw.indexOf(',');
       const intStr = sep === -1 ? raw  : raw.slice(0, sep);
       const decStr = sep === -1 ? ''   : ',' + raw.slice(sep + 1).replace(/,/g, '');
-      const intNum = parseInt(intStr, 10);
 
       const cursor  = priceInput.selectionStart;
       const prevLen = priceInput.value.length;
-      priceInput.value = (intStr !== '' ? fmtInt.format(intNum) : '') + decStr;
+      priceInput.value = (intStr !== '' ? fmtInt.format(parseInt(intStr, 10)) : '') + decStr;
       const pos = Math.max(0, cursor + (priceInput.value.length - prevLen));
       priceInput.setSelectionRange(pos, pos);
 
