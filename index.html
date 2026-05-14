@@ -61,9 +61,7 @@
       margin-bottom: 0.5rem;
     }
 
-    .input-wrap {
-      position: relative;
-    }
+    .input-wrap { position: relative; }
 
     .input-wrap input {
       width: 100%;
@@ -202,7 +200,7 @@
       </div>
     </div>
 
-    <div class="results" aria-live="polite" aria-label="Berechnungsergebnisse">
+    <div class="results" role="region" aria-live="polite" aria-label="Berechnungsergebnisse">
       <div class="result-block" role="button" tabindex="0">
         <div class="label">Entgangene Dividende (Jahr)</div>
         <div class="value zero" id="r-annual">— €</div>
@@ -350,13 +348,15 @@
       const canvas = document.createElement('canvas');
       canvas.width = canvas.height = 64;
       const ctx = canvas.getContext('2d');
-      ctx.font = '56px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('💸', 32, 36);
-      canvas.toBlob(blob => {
-        if (blob) document.getElementById('favicon').href = URL.createObjectURL(blob);
-      });
+      if (ctx) {
+        ctx.font = '56px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('💸', 32, 36);
+        canvas.toBlob(blob => {
+          if (blob) document.getElementById('favicon').href = URL.createObjectURL(blob);
+        });
+      }
     }
   </script>
 </body>
