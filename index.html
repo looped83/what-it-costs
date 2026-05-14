@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dividenden-Opportunitätskostenrechner</title>
+  <title>What it costs</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,7 +29,7 @@
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #666;
+      color: #888;
       margin-bottom: 2.5rem;
     }
 
@@ -45,7 +46,7 @@
       font-weight: 500;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #555;
+      color: #888;
       margin-bottom: 0.5rem;
     }
 
@@ -82,7 +83,7 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 0.85rem;
-      color: #444;
+      color: #666;
       pointer-events: none;
     }
 
@@ -102,7 +103,7 @@
       font-weight: 500;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #555;
+      color: #888;
       margin-bottom: 0.4rem;
     }
 
@@ -120,7 +121,7 @@
     }
 
     .result-block .value.zero {
-      color: #333;
+      color: #444;
     }
   </style>
 </head>
@@ -132,7 +133,7 @@
       <div class="field">
         <label>Kaufsumme</label>
         <div class="input-wrap">
-          <input id="price" type="number" min="0" step="100" placeholder="10000" />
+          <input id="price" type="number" min="0" step="100" placeholder="10.000" />
           <span class="unit">€</span>
         </div>
       </div>
