@@ -236,6 +236,11 @@
       el.classList.toggle('zero', value === null);
     }
 
+    function setValidity(input, invalid) {
+      input.classList.toggle('invalid', invalid);
+      input.setAttribute('aria-invalid', String(invalid));
+    }
+
     function calculate() {
       const price    = parsePrice(priceInput.value);
       const divYield = parseYield(yieldInput.value);
@@ -243,10 +248,8 @@
       const priceOk = isFinite(price)    && price    > 0;
       const yieldOk = isFinite(divYield) && divYield > 0 && divYield <= 100;
 
-      priceInput.classList.toggle('invalid', priceInput.value !== '' && !priceOk);
-      yieldInput.classList.toggle('invalid', yieldInput.value !== '' && !yieldOk);
-      priceInput.setAttribute('aria-invalid', priceInput.value !== '' && !priceOk ? 'true' : 'false');
-      yieldInput.setAttribute('aria-invalid', yieldInput.value !== '' && !yieldOk ? 'true' : 'false');
+      setValidity(priceInput, priceInput.value !== '' && !priceOk);
+      setValidity(yieldInput, yieldInput.value !== '' && !yieldOk);
 
       if (!priceOk || !yieldOk) {
         resultEls.forEach(el => setResult(el, null));
@@ -299,6 +302,7 @@
 
       function copy() {
         if (valueEl.classList.contains('zero') || block.classList.contains('copied')) return;
+        if (!navigator.clipboard) return;
 
         navigator.clipboard.writeText(valueEl.textContent).then(() => {
           const orig = labelEl.textContent;
