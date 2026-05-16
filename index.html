@@ -121,6 +121,7 @@
       padding: 1.25rem 1.5rem;
       text-align: center;
       cursor: pointer;
+      touch-action: manipulation;
       transition: border-color 0.2s;
       user-select: none;
     }
@@ -149,6 +150,7 @@
       line-height: 1;
       color: #fff;
       white-space: nowrap;
+      font-variant-numeric: tabular-nums;
       transition: color 0.2s;
     }
 
@@ -169,6 +171,7 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
+      touch-action: manipulation;
       padding: 0 0.75rem;
       transition: color 0.15s;
     }
@@ -220,7 +223,7 @@
         <label for="yield">Dividendenrendite<span class="sr-only"> (%)</span></label>
         <div class="input-wrap">
           <input id="yield" type="text" inputmode="decimal"
-                 placeholder="z.B. 4,5" autocomplete="off" spellcheck="false" />
+                 placeholder="z.B. 4,5" value="4" autocomplete="off" spellcheck="false" />
           <span class="unit" aria-hidden="true">%</span>
         </div>
       </div>
@@ -260,13 +263,14 @@
     };
     const resultEls = Object.values(els);
 
+    const RE_THOUSANDS = /\B(?=(\d{3})+(?!\d))/g;
     function fmt(n) {
       const s = n.toFixed(2);
       const [int, dec] = s.split('.');
-      return int.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + dec;
+      return int.replace(RE_THOUSANDS, '.') + ',' + dec;
     }
     function fmtInt(n) {
-      return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return String(Math.round(n)).replace(RE_THOUSANDS, '.');
     }
 
     function parsePrice(str) {
@@ -377,7 +381,6 @@
       });
     });
 
-    yieldInput.value = YIELD_DEFAULT;
     calculate();
   </script>
 </body>
