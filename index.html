@@ -260,8 +260,14 @@
     };
     const resultEls = Object.values(els);
 
-    const fmt    = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const fmtInt = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
+    function fmt(n) {
+      const s = n.toFixed(2);
+      const [int, dec] = s.split('.');
+      return int.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + dec;
+    }
+    function fmtInt(n) {
+      return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
 
     function parsePrice(str) {
       return parseFloat(str.replace(/\./g, '').replace(',', '.'));
@@ -272,7 +278,7 @@
     }
 
     function setResult(el, value) {
-      const text = value !== null ? fmt.format(value) + ' €' : '— €';
+      const text = value !== null ? fmt(value) + ' €' : '— €';
       if (el.textContent !== text) el.textContent = text;
       const zero = value === null;
       if (el.classList.contains('zero') !== zero) el.classList.toggle('zero', zero);
@@ -316,7 +322,7 @@
       const intStr = sep === -1 ? raw  : raw.slice(0, sep);
       const decStr = sep === -1 ? ''   : ',' + raw.slice(sep + 1).replace(/,/g, '');
 
-      priceInput.value = (intStr !== '' ? fmtInt.format(parseInt(intStr, 10)) : '') + decStr;
+      priceInput.value = (intStr !== '' ? fmtInt(parseInt(intStr, 10)) : '') + decStr;
       const pos = Math.max(0, cursor + (priceInput.value.length - prevLen));
       priceInput.setSelectionRange(pos, pos);
 
